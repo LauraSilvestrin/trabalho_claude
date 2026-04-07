@@ -1,0 +1,958 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.aula { max-width: 680px; padding: 0 0 2rem; }
+.header { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; border: 0.5px solid var(--color-border-tertiary); }
+.badge { display: inline-block; background: var(--color-background-warning); color: var(--color-text-warning); font-size: 11px; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; }
+.titulo { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.subtitulo { font-size: 14px; color: var(--color-text-secondary); }
+.nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.nav button { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all .15s; }
+.nav button:hover { background: var(--color-background-secondary); }
+.nav button.ativo { background: var(--color-background-warning); color: var(--color-text-warning); border-color: transparent; }
+.secao { display: none; }
+.secao.ativa { display: block; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+.card h2 { font-size: 16px; font-weight: 500; margin-bottom: 0.75rem; color: var(--color-text-primary); }
+.card p { font-size: 14px; line-height: 1.7; color: var(--color-text-secondary); margin-bottom: 0.75rem; }
+.card p:last-child { margin-bottom: 0; }
+.destaque { background: var(--color-background-warning); border-left: 3px solid var(--color-text-warning); border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 14px; color: var(--color-text-primary); line-height: 1.6; }
+.destaque-info { background: var(--color-background-info); border-left: 3px solid var(--color-text-info); border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 14px; color: var(--color-text-primary); line-height: 1.6; }
+.destaque-ok { background: #E1F5EE; border-left: 3px solid #1d9e75; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 14px; color: var(--color-text-primary); line-height: 1.6; }
+.destaque-err { background: #FAECE7; border-left: 3px solid #d85a30; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 14px; color: var(--color-text-primary); line-height: 1.6; }
+.formula { font-family: var(--font-mono); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 3px 10px; font-size: 13px; display: inline-block; margin: 3px 2px; color: var(--color-text-primary); }
+.formula-block { font-family: var(--font-mono); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; font-size: 14px; color: var(--color-text-primary); margin: 0.75rem 0; line-height: 1.8; }
+.passo { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 0.75rem; }
+.num { background: var(--color-background-warning); color: var(--color-text-warning); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 2px; }
+.passo-txt { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 0.75rem; }
+.mini-card { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.75rem; }
+.mini-card .mc-titulo { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.mini-card .mc-corpo { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+.quant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 0.75rem; }
+.quant-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; cursor: pointer; transition: border-color .15s; }
+.quant-card:hover { border-color: var(--color-border-warning); }
+.quant-simb { font-family: var(--font-mono); font-size: 36px; font-weight: 500; text-align: center; margin-bottom: 6px; }
+.quant-nome { font-size: 13px; font-weight: 500; text-align: center; color: var(--color-text-primary); }
+.quant-leitura { font-size: 12px; color: var(--color-text-secondary); text-align: center; margin-top: 4px; font-family: var(--font-mono); }
+.qd-universal { background: #E6F1FB; color: #185FA5; border-color: #B5D4F4; }
+.qd-existencial { background: #FAEEDA; color: #854F0B; border-color: #FAC775; }
+.det-quant { display: none; }
+.det-quant.vis { display: block; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 0.75rem; }
+th { background: var(--color-background-secondary); color: var(--color-text-secondary); font-weight: 500; padding: 8px 10px; border: 0.5px solid var(--color-border-tertiary); text-align: center; }
+td { padding: 7px 10px; border: 0.5px solid var(--color-border-tertiary); text-align: left; color: var(--color-text-primary); font-size: 13px; }
+td.center { text-align: center; }
+.v { color: #1d9e75; font-weight: 500; }
+.f { color: #d85a30; font-weight: 500; }
+.dom-builder { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+.dom-builder h3 { font-size: 14px; font-weight: 500; margin-bottom: 0.75rem; color: var(--color-text-primary); }
+.dom-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.dom-label { font-size: 13px; color: var(--color-text-secondary); min-width: 100px; font-family: var(--font-mono); }
+.dom-elements { display: flex; gap: 6px; flex-wrap: wrap; }
+.elem-tag { display: flex; align-items: center; gap: 5px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: 20px; padding: 4px 10px; font-size: 13px; color: var(--color-text-primary); font-family: var(--font-mono); cursor: pointer; transition: all .15s; user-select: none; }
+.elem-tag.sel { background: #FAEEDA; border-color: #FAC775; color: #854F0B; }
+.elem-tag:hover { border-color: var(--color-border-primary); }
+.pred-select { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.pred-btn { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all .15s; font-family: var(--font-mono); }
+.pred-btn:hover { background: var(--color-background-secondary); }
+.pred-btn.ativo { background: var(--color-background-warning); color: var(--color-text-warning); border-color: transparent; }
+.quant-sel { display: flex; gap: 8px; margin-bottom: 0.75rem; }
+.qbtn { padding: 6px 16px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-size: 13px; font-family: var(--font-mono); transition: all .15s; }
+.qbtn.ativo { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; }
+.resultado-grande { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1rem; margin-top: 0.75rem; }
+.res-formula { font-family: var(--font-mono); font-size: 15px; color: var(--color-text-secondary); margin-bottom: 8px; }
+.res-valor-g { font-size: 22px; font-weight: 500; margin-bottom: 8px; }
+.res-detalhe { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; font-family: var(--font-mono); }
+.quiz-area { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+.quiz-q { font-size: 15px; font-weight: 500; margin-bottom: 1rem; color: var(--color-text-primary); line-height: 1.5; }
+.quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; font-size: 14px; color: var(--color-text-primary); transition: border-color .15s; line-height: 1.5; }
+.quiz-opt:hover { border-color: var(--color-border-warning); }
+.quiz-opt.correta { border-color: #1d9e75; background: #E1F5EE; color: #085041; }
+.quiz-opt.errada { border-color: #d85a30; background: #FAECE7; color: #4A1B0C; }
+.quiz-feedback { font-size: 13px; margin-top: 0.75rem; padding: 0.6rem 0.9rem; border-radius: var(--border-radius-md); display: none; line-height: 1.6; }
+.quiz-feedback.ok { background: #E1F5EE; color: #085041; display: block; }
+.quiz-feedback.err { background: #FAECE7; color: #4A1B0C; display: block; }
+.glos-item { border-bottom: 0.5px solid var(--color-border-tertiary); padding: 0.75rem 0; }
+.glos-item:last-child { border-bottom: none; }
+.glos-termo { font-weight: 500; font-size: 14px; color: var(--color-text-primary); font-family: var(--font-mono); }
+.glos-def { font-size: 13px; color: var(--color-text-secondary); margin-top: 3px; line-height: 1.6; }
+.tabs-comp { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+.tab-c { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all .15s; font-family: var(--font-mono); }
+.tab-c.ativa { background: var(--color-background-warning); color: var(--color-text-warning); border-color: transparent; }
+.comp-content { display: none; }
+.comp-content.ativa { display: block; }
+.negacao-box { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 0.75rem; }
+.neg-item { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem; }
+.neg-orig { font-family: var(--font-mono); font-size: 13px; color: var(--color-text-secondary); margin-bottom: 6px; }
+.neg-result { font-family: var(--font-mono); font-size: 13px; color: var(--color-text-primary); font-weight: 500; }
+.neg-leitura { font-size: 11px; color: var(--color-text-tertiary); margin-top: 4px; }
+/* Interface Visual: Lógica de Predicados (Prof. Cavejon)
+   Foco: Legibilidade, Modernidade e Interatividade
+*/
+
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #334155;
+    --text-bold: #0f172a;
+    --border-color: #e2e8f0;
+    --accent-warning: #f59e0b;
+    --accent-info: #0ea5e9;
+    --accent-success: #10b981;
+    --accent-error: #ef4444;
+    --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+body {
+    background-color: var(--bg-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+.aula {
+    max-width: 900px !important; /* Aumentado para melhor visualização em desktop */
+    margin: 2rem auto;
+    padding: 0 20px;
+}
+
+/* Header Estilizado */
+.header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem !important;
+    text-align: center;
+}
+
+.header .titulo {
+    color: white !important;
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.025em;
+}
+
+.header .subtitulo {
+    color: #cbd5e1 !important;
+    font-weight: 300;
+}
+
+.badge {
+    background: var(--accent-warning) !important;
+    color: #451a03 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Navegação em Pílulas */
+.nav {
+    justify-content: center;
+    background: white;
+    padding: 10px;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.nav button {
+    border: none !important;
+    font-weight: 500 !important;
+    padding: 8px 16px !important;
+    transition: all 0.2s ease !important;
+}
+
+.nav button.ativo {
+    background: var(--primary) !important;
+    color: white !important;
+    transform: translateY(-1px);
+}
+
+/* Cards de Conteúdo */
+.card {
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.card h2 {
+    color: var(--text-bold) !important;
+    border-bottom: 2px solid var(--primary);
+    display: inline-block;
+    padding-bottom: 4px;
+    margin-bottom: 1.25rem !important;
+}
+
+/* Fórmulas Lógicas */
+.formula-block {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+    border-left: 4px solid var(--primary) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 15px !important;
+    border-radius: 8px !important;
+}
+
+.formula {
+    background: #f1f5f9 !important;
+    color: var(--primary) !important;
+    font-weight: 600;
+    border-radius: 4px !important;
+}
+
+/* Avaliador Interativo */
+.dom-builder {
+    border: 2px solid var(--border-color) !important;
+    background: white !important;
+}
+
+.elem-tag {
+    transition: all 0.2s !important;
+    border-width: 2px !important;
+}
+
+.elem-tag.sel {
+    background: var(--primary) !important;
+    color: white !important;
+    border-color: var(--primary) !important;
+}
+
+.resultado-grande {
+    border: 2px solid var(--primary) !important;
+    background: #eff6ff !important;
+    text-align: center;
+}
+
+.res-valor-g.v { color: var(--accent-success) !important; font-weight: 800; }
+.res-valor-g.f { color: var(--accent-error) !important; font-weight: 800; }
+
+/* Tabelas */
+table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+th {
+    background: #f1f5f9 !important;
+    text-transform: uppercase;
+    font-size: 11px !important;
+    color: #64748b !important;
+}
+
+/* Quiz */
+.quiz-opt {
+    border: 2px solid var(--border-color) !important;
+    font-weight: 500;
+}
+
+.quiz-opt:hover {
+    background: #f8fafc !important;
+    border-color: var(--primary) !important;
+}
+
+.quiz-opt.correta {
+    background: #dcfce7 !important;
+    border-color: var(--accent-success) !important;
+}
+
+.quiz-opt.errada {
+    background: #fee2e2 !important;
+    border-color: var(--accent-error) !important;
+}
+
+/* Animações de Transição */
+.secao.ativa {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="aula">
+  <div class="header">
+    <div class="badge">Lógica em Computação — Aula 2</div>
+    <div class="titulo">Lógica de Predicados</div>
+    <div class="subtitulo">Prof. Cavejon · Fundamentos da Computação · Nível: Intermediário</div>
+  </div>
+
+  <div class="nav">
+    <button class="ativo" onclick="mostrar('intro',this)">1. Introdução</button>
+    <button onclick="mostrar('predicados',this)">2. Predicados</button>
+    <button onclick="mostrar('quantificadores',this)">3. Quantificadores</button>
+    <button onclick="mostrar('formulas',this)">4. Fórmulas</button>
+    <button onclick="mostrar('avaliador',this)">5. Avaliador</button>
+    <button onclick="mostrar('negacao',this)">6. Negação</button>
+    <button onclick="mostrar('comparativo',this)">7. LP vs LPO</button>
+    <button onclick="mostrar('aplicacoes',this)">8. Aplicações</button>
+    <button onclick="mostrar('exercicios',this)">9. Exercícios</button>
+    <button onclick="mostrar('glossario',this)">10. Glossário</button>
+  </div>
+
+  <!-- 1. INTRODUÇÃO -->
+  <div id="intro" class="secao ativa">
+    <div class="card">
+      <h2>Por que precisamos ir além das proposições?</h2>
+      <p>A Lógica Proposicional é poderosa, mas tem uma limitação fundamental: ela trata cada afirmação como um bloco atômico, sem conseguir "entrar dentro" das frases. Observe o problema:</p>
+      <div class="formula-block">
+        Premissa 1: "Sócrates é humano."<br>
+        Premissa 2: "Todo humano é mortal."<br>
+        Conclusão:  "Sócrates é mortal."<br><br>
+        <span style="color:var(--color-text-secondary)">→ A Lógica Proposicional NÃO consegue provar essa conclusão!</span>
+      </div>
+      <p>Para isso, precisamos de uma lógica que entenda <strong>objetos</strong>, <strong>propriedades</strong> e <strong>relações</strong>. Essa é a Lógica de Predicados — também chamada de Lógica de Primeira Ordem (LPO) ou Cálculo de Predicados.</p>
+    </div>
+    <div class="card">
+      <h2>O grande salto conceitual</h2>
+      <div class="grid2">
+        <div class="mini-card">
+          <div class="mc-titulo">Lógica Proposicional</div>
+          <div class="mc-corpo">Trabalha com proposições inteiras: p, q, r...<br>Não enxerga o interior das frases.<br>Não fala de "todos" ou "existe".<br>Universo fechado e fixo.</div>
+        </div>
+        <div class="mini-card">
+          <div class="mc-titulo">Lógica de Predicados</div>
+          <div class="mc-corpo">Decompõe frases em objetos e propriedades.<br>Usa variáveis para representar objetos.<br>Tem quantificadores: ∀ e ∃.<br>Pode raciocinar sobre domínios infinitos.</div>
+        </div>
+      </div>
+      <div class="destaque">📌 A Lógica de Predicados é a base da matemática formal, da programação em lógica (Prolog), de bancos de dados relacionais, e de sistemas de IA como provadores de teoremas.</div>
+    </div>
+    <div class="card">
+      <h2>Componentes básicos</h2>
+      <div class="passo">
+        <div class="num">1</div>
+        <div class="passo-txt"><strong>Termos:</strong> constantes (objetos específicos: Sócrates, 5, Brasil), variáveis (x, y, z) e funções (pai(x), soma(x,y)).</div>
+      </div>
+      <div class="passo">
+        <div class="num">2</div>
+        <div class="passo-txt"><strong>Predicados:</strong> propriedades ou relações aplicadas a termos. Humano(x), Maior(x,y), Par(n).</div>
+      </div>
+      <div class="passo">
+        <div class="num">3</div>
+        <div class="passo-txt"><strong>Quantificadores:</strong> ∀ (para todo) e ∃ (existe). Permitem fazer afirmações sobre coleções de objetos.</div>
+      </div>
+      <div class="passo">
+        <div class="num">4</div>
+        <div class="passo-txt"><strong>Conectivos lógicos:</strong> os mesmos da LP — ¬, ∧, ∨, →, ↔ — mas agora aplicados a fórmulas com predicados.</div>
+      </div>
+      <div class="passo">
+        <div class="num">5</div>
+        <div class="passo-txt"><strong>Domínio de interpretação:</strong> o conjunto de objetos sobre os quais as variáveis podem assumir valores. Ex: ℕ, ℝ, conjunto de pessoas.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. PREDICADOS -->
+  <div id="predicados" class="secao">
+    <div class="card">
+      <h2>O que é um Predicado?</h2>
+      <p>Um <strong>predicado</strong> é uma função que recebe um ou mais termos e retorna um valor-verdade (V ou F). É como uma frase com "lacunas" para serem preenchidas por objetos.</p>
+      <div class="formula-block">
+        P(x)     → "x é par"          — predicado unário<br>
+        Maior(x,y) → "x é maior que y" — predicado binário<br>
+        Entre(x,y,z) → "x está entre y e z" — predicado ternário
+      </div>
+      <p>Quando substituímos as variáveis por constantes, o predicado se torna uma <strong>proposição</strong> com valor-verdade definido.</p>
+    </div>
+    <div class="card">
+      <h2>Aridade dos Predicados</h2>
+      <table>
+        <tr><th>Aridade</th><th>Tipo</th><th>Exemplo</th><th>Resultado</th></tr>
+        <tr><td class="center">1</td><td>Unário</td><td><span class="formula">Par(4)</span></td><td class="v center">V</td></tr>
+        <tr><td class="center">1</td><td>Unário</td><td><span class="formula">Par(7)</span></td><td class="f center">F</td></tr>
+        <tr><td class="center">2</td><td>Binário</td><td><span class="formula">Maior(5, 3)</span></td><td class="v center">V</td></tr>
+        <tr><td class="center">2</td><td>Binário</td><td><span class="formula">Irmão(João, Maria)</span></td><td class="f center">F</td></tr>
+        <tr><td class="center">3</td><td>Ternário</td><td><span class="formula">Entre(3, 1, 5)</span></td><td class="v center">V</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Constantes, Variáveis e Funções</h2>
+      <div class="passo">
+        <div class="num">C</div>
+        <div class="passo-txt"><strong>Constantes</strong> nomeiam objetos específicos do domínio: <span class="formula">socrates</span>, <span class="formula">0</span>, <span class="formula">brasil</span>. Sempre com letra minúscula por convenção.</div>
+      </div>
+      <div class="passo">
+        <div class="num">V</div>
+        <div class="passo-txt"><strong>Variáveis</strong> representam objetos arbitrários do domínio: <span class="formula">x</span>, <span class="formula">y</span>, <span class="formula">z</span>. Seu valor é determinado pelos quantificadores ou por substituição.</div>
+      </div>
+      <div class="passo">
+        <div class="num">F</div>
+        <div class="passo-txt"><strong>Funções</strong> mapeiam objetos em objetos: <span class="formula">pai(x)</span>, <span class="formula">soma(x,y)</span>, <span class="formula">quadrado(n)</span>. Não retornam V/F — retornam objetos do domínio.</div>
+      </div>
+      <div class="destaque">⚠️ Atenção crucial: Predicados retornam V ou F. Funções retornam objetos. Não confunda!</div>
+    </div>
+    <div class="card">
+      <h2>Igualdade</h2>
+      <p>A igualdade <span class="formula">x = y</span> é um predicado binário especial, presente em quase todas as teorias. Permite expressar unicidade e identidade de objetos:</p>
+      <div class="formula-block">
+        "Existe um único x tal que P(x)":<br>
+        ∃x (P(x) ∧ ∀y (P(y) → y = x))
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. QUANTIFICADORES -->
+  <div id="quantificadores" class="secao">
+    <div class="card">
+      <h2>Os Dois Quantificadores</h2>
+      <p>Os quantificadores são o coração da Lógica de Predicados — é o que a torna incomparavelmente mais expressiva que a Lógica Proposicional. Clique em cada um.</p>
+      <div class="quant-grid">
+        <div class="quant-card qd-universal" onclick="detQuant('univ')">
+          <div class="quant-simb">∀</div>
+          <div class="quant-nome">Quantificador Universal</div>
+          <div class="quant-leitura">"para todo" / "para qualquer"</div>
+        </div>
+        <div class="quant-card qd-existencial" onclick="detQuant('exist')">
+          <div class="quant-simb">∃</div>
+          <div class="quant-nome">Quantificador Existencial</div>
+          <div class="quant-leitura">"existe" / "existe pelo menos um"</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="det-univ" class="card det-quant">
+      <h2>∀ — Quantificador Universal</h2>
+      <p>A fórmula <span class="formula">∀x P(x)</span> afirma que <em>para todo</em> objeto x do domínio, P(x) é verdadeiro. É equivalente a uma grande conjunção sobre todos os elementos do domínio.</p>
+      <div class="formula-block">
+        Domínio D = {a, b, c}:<br>
+        ∀x P(x)  ≡  P(a) ∧ P(b) ∧ P(c)
+      </div>
+      <div class="destaque-info">Para falsificar ∀x P(x), basta encontrar <strong>um único</strong> elemento d do domínio tal que P(d) seja falso. Esse elemento é chamado de <strong>contraexemplo</strong>.</div>
+      <p><strong>Exemplos:</strong></p>
+      <p><span class="formula">∀x (Humano(x) → Mortal(x))</span> — "Todo humano é mortal"</p>
+      <p><span class="formula">∀x (Par(x) → ∃y (x = 2·y))</span> — "Todo par é o dobro de algum inteiro"</p>
+      <p><strong>Uso com condicional:</strong> o ∀ é tipicamente combinado com <span class="formula">→</span>. Escrever <span class="formula">∀x (Humano(x) ∧ Mortal(x))</span> diria "todo objeto do domínio é simultaneamente humano e mortal" — muito mais forte e geralmente errado!</p>
+    </div>
+
+    <div id="det-exist" class="card det-quant">
+      <h2>∃ — Quantificador Existencial</h2>
+      <p>A fórmula <span class="formula">∃x P(x)</span> afirma que <em>existe pelo menos um</em> objeto x no domínio tal que P(x) é verdadeiro. Equivale a uma grande disjunção.</p>
+      <div class="formula-block">
+        Domínio D = {a, b, c}:<br>
+        ∃x P(x)  ≡  P(a) ∨ P(b) ∨ P(c)
+      </div>
+      <div class="destaque">Para verificar ∃x P(x), basta encontrar <strong>um único</strong> elemento d tal que P(d) seja verdadeiro. Esse elemento é chamado de <strong>testemunha</strong>.</div>
+      <p><strong>Exemplos:</strong></p>
+      <p><span class="formula">∃x Primo(x)</span> — "Existe (pelo menos) um número primo"</p>
+      <p><span class="formula">∃x (Estudante(x) ∧ Passou(x))</span> — "Algum estudante passou"</p>
+      <p><strong>Uso com conjunção:</strong> o ∃ é tipicamente combinado com <span class="formula">∧</span>. Escrever <span class="formula">∃x (Estudante(x) → Passou(x))</span> seria satisfeito por qualquer não-estudante, pois F→F=V. Isso raramente é o que se quer dizer!</p>
+    </div>
+
+    <div class="card">
+      <h2>Quantificadores Aninhados</h2>
+      <p>É possível (e muito comum) aninhar quantificadores. A <strong>ordem importa</strong> — trocar a ordem pode mudar completamente o significado.</p>
+      <table>
+        <tr><th>Fórmula</th><th>Leitura</th><th>Domínio ℕ</th></tr>
+        <tr><td><span class="formula">∀x ∃y Maior(y,x)</span></td><td>Para todo x existe y maior que x</td><td class="v center">V</td></tr>
+        <tr><td><span class="formula">∃y ∀x Maior(y,x)</span></td><td>Existe y que é maior que todos os x</td><td class="f center">F</td></tr>
+        <tr><td><span class="formula">∀x ∀y Amigo(x,y)</span></td><td>Todos são amigos de todos</td><td class="f center">F*</td></tr>
+        <tr><td><span class="formula">∃x ∃y Amigo(x,y)</span></td><td>Existem dois que são amigos</td><td class="v center">V*</td></tr>
+      </table>
+      <p style="font-size:12px;color:var(--color-text-tertiary);margin-top:6px">* Resultado depende da interpretação de Amigo(x,y)</p>
+      <div class="destaque">⚠️ Erro clássico: ∀x ∃y ≠ ∃y ∀x. No primeiro, y pode depender de x. No segundo, um único y serve para todos os x — condição muito mais forte!</div>
+    </div>
+
+    <div class="card">
+      <h2>Variáveis Livres e Ligadas</h2>
+      <p>Uma variável é <strong>ligada</strong> quando está no escopo de um quantificador. É <strong>livre</strong> caso contrário.</p>
+      <div class="formula-block">
+        ∀x (P(x) → Q(x, y))<br>
+        <span style="color:var(--color-text-secondary)">     ↑ ligada     ↑ ligada  ↑ livre</span>
+      </div>
+      <p>Uma fórmula com variáveis livres é chamada de <strong>fórmula aberta</strong> — não tem valor-verdade definido sem saber o valor de y. Uma fórmula sem variáveis livres é uma <strong>sentença</strong> e tem valor-verdade definido.</p>
+    </div>
+  </div>
+
+  <!-- 4. FÓRMULAS -->
+  <div id="formulas" class="secao">
+    <div class="card">
+      <h2>Construindo Fórmulas Bem Formadas (FBFs)</h2>
+      <p>Uma Fórmula Bem Formada (FBF) em Lógica de Predicados é construída pelas seguintes regras:</p>
+      <div class="passo">
+        <div class="num">1</div>
+        <div class="passo-txt">Se P é um predicado n-ário e t₁,...,tₙ são termos, então <span class="formula">P(t₁,...,tₙ)</span> é uma FBF (fórmula atômica).</div>
+      </div>
+      <div class="passo">
+        <div class="num">2</div>
+        <div class="passo-txt">Se A é uma FBF, então <span class="formula">¬A</span> é uma FBF.</div>
+      </div>
+      <div class="passo">
+        <div class="num">3</div>
+        <div class="passo-txt">Se A e B são FBFs, então <span class="formula">A ∧ B</span>, <span class="formula">A ∨ B</span>, <span class="formula">A → B</span>, <span class="formula">A ↔ B</span> são FBFs.</div>
+      </div>
+      <div class="passo">
+        <div class="num">4</div>
+        <div class="passo-txt">Se A é uma FBF e x é uma variável, então <span class="formula">∀x A</span> e <span class="formula">∃x A</span> são FBFs.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Traduzindo Linguagem Natural → Lógica</h2>
+      <p>Esta é a habilidade mais importante e mais praticada em provas. Veja os padrões:</p>
+      <table>
+        <tr><th>Linguagem Natural</th><th>Fórmula Lógica</th></tr>
+        <tr><td>Todo A é B</td><td><span class="formula">∀x (A(x) → B(x))</span></td></tr>
+        <tr><td>Algum A é B</td><td><span class="formula">∃x (A(x) ∧ B(x))</span></td></tr>
+        <tr><td>Nenhum A é B</td><td><span class="formula">¬∃x (A(x) ∧ B(x))</span></td></tr>
+        <tr><td>Nem todo A é B</td><td><span class="formula">¬∀x (A(x) → B(x))</span></td></tr>
+        <tr><td>Só A's são B's</td><td><span class="formula">∀x (B(x) → A(x))</span></td></tr>
+        <tr><td>Existe exatamente um A</td><td><span class="formula">∃x (A(x) ∧ ∀y(A(y)→y=x))</span></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Exemplo Clássico — Sócrates</h2>
+      <div class="formula-block">
+        Humano(s)           — "Sócrates é humano" [s = sócrates]<br>
+        ∀x (Humano(x) → Mortal(x))  — "Todo humano é mortal"<br>
+        ─────────────────────────────<br>
+        Mortal(s)           — "Sócrates é mortal" ✓ (por Modus Ponens)
+      </div>
+      <div class="destaque-ok">Agora conseguimos provar formalmente o que a Lógica Proposicional não conseguia!</div>
+    </div>
+
+    <div class="card">
+      <h2>Interpretação e Satisfatibilidade</h2>
+      <p>Uma <strong>interpretação</strong> (ou estrutura) consiste em: (1) um domínio D não vazio, (2) uma atribuição de objetos de D às constantes, (3) uma atribuição de relações sobre D aos predicados.</p>
+      <p>Uma fórmula é <strong>satisfatível</strong> se existe alguma interpretação que a torna verdadeira. É <strong>válida</strong> (tautologia) se é verdadeira em toda interpretação possível.</p>
+      <div class="destaque">⚠️ Na LPO, verificar validade é <strong>semidecidível</strong> — podemos provar que algo é válido, mas não podemos sempre provar que é inválido. Isso é o Teorema da Incompletude de Gödel!</div>
+    </div>
+  </div>
+
+  <!-- 5. AVALIADOR INTERATIVO -->
+  <div id="avaliador" class="secao">
+    <div class="card">
+      <h2>Avaliador de Predicados</h2>
+      <p>Defina um domínio, escolha um predicado e um quantificador para ver o resultado em tempo real.</p>
+    </div>
+    <div class="dom-builder">
+      <h3>Passo 1 — Escolha os elementos do domínio (clique para selecionar)</h3>
+      <div class="dom-row">
+        <span class="dom-label">Domínio D:</span>
+        <div class="dom-elements" id="dom-els">
+          <div class="elem-tag sel" onclick="toggleElem(this,'1')">1</div>
+          <div class="elem-tag sel" onclick="toggleElem(this,'2')">2</div>
+          <div class="elem-tag sel" onclick="toggleElem(this,'3')">3</div>
+          <div class="elem-tag sel" onclick="toggleElem(this,'4')">4</div>
+          <div class="elem-tag sel" onclick="toggleElem(this,'5')">5</div>
+          <div class="elem-tag sel" onclick="toggleElem(this,'6')">6</div>
+          <div class="elem-tag" onclick="toggleElem(this,'7')">7</div>
+          <div class="elem-tag" onclick="toggleElem(this,'8')">8</div>
+          <div class="elem-tag" onclick="toggleElem(this,'9')">9</div>
+          <div class="elem-tag" onclick="toggleElem(this,'10')">10</div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:1rem">Passo 2 — Escolha o predicado P(x)</h3>
+      <div class="pred-select">
+        <button class="pred-btn ativo" onclick="setPred(this,'par')">Par(x): x é par</button>
+        <button class="pred-btn" onclick="setPred(this,'maior3')">Maior3(x): x > 3</button>
+        <button class="pred-btn" onclick="setPred(this,'primo')">Primo(x): x é primo</button>
+        <button class="pred-btn" onclick="setPred(this,'perfeito')">Perf(x): x é perfeito</button>
+      </div>
+
+      <h3 style="margin-top:1rem">Passo 3 — Escolha o quantificador</h3>
+      <div class="quant-sel">
+        <button class="qbtn ativo" onclick="setQuant(this,'univ')">∀x P(x)</button>
+        <button class="qbtn" onclick="setQuant(this,'exist')">∃x P(x)</button>
+        <button class="qbtn" onclick="setQuant(this,'univneg')">∀x ¬P(x)</button>
+        <button class="qbtn" onclick="setQuant(this,'existneg')">∃x ¬P(x)</button>
+      </div>
+
+      <div class="resultado-grande">
+        <div class="res-formula" id="av-formula">∀x Par(x)</div>
+        <div class="res-valor-g" id="av-valor"></div>
+        <div class="res-detalhe" id="av-detalhe"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. NEGAÇÃO DE QUANTIFICADORES -->
+  <div id="negacao" class="secao">
+    <div class="card">
+      <h2>Negação de Quantificadores — Leis de De Morgan Generalizadas</h2>
+      <p>Assim como a Lógica Proposicional tem as Leis de De Morgan para ∧ e ∨, a Lógica de Predicados tem equivalências análogas para os quantificadores. São essenciais para manipular e simplificar fórmulas.</p>
+      <div class="negacao-box">
+        <div class="neg-item">
+          <div class="neg-orig">¬∀x P(x)</div>
+          <div class="neg-result">≡ ∃x ¬P(x)</div>
+          <div class="neg-leitura">"Não é o caso que todo x satisfaz P" = "existe x que não satisfaz P"</div>
+        </div>
+        <div class="neg-item">
+          <div class="neg-orig">¬∃x P(x)</div>
+          <div class="neg-result">≡ ∀x ¬P(x)</div>
+          <div class="neg-leitura">"Não existe x que satisfaz P" = "para todo x, P é falso"</div>
+        </div>
+      </div>
+      <div class="destaque">💡 Mnemônico: ao empurrar a negação para dentro, o quantificador "vira" — ∀ vira ∃ e ∃ vira ∀.</div>
+    </div>
+
+    <div class="card">
+      <h2>Negação de Fórmulas Complexas — passo a passo</h2>
+      <div class="tabs-comp">
+        <button class="tab-c ativa" onclick="showComp('ex1',this)">Exemplo 1</button>
+        <button class="tab-c" onclick="showComp('ex2',this)">Exemplo 2</button>
+        <button class="tab-c" onclick="showComp('ex3',this)">Exemplo 3</button>
+      </div>
+      <div id="comp-ex1" class="comp-content ativa">
+        <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">Negar: "Todo humano é mortal" → ∀x (H(x) → M(x))</p>
+        <div class="formula-block">
+          ¬∀x (H(x) → M(x))<br>
+          ≡ ∃x ¬(H(x) → M(x))       [¬∀ vira ∃]<br>
+          ≡ ∃x ¬(¬H(x) ∨ M(x))      [eliminação do →]<br>
+          ≡ ∃x (H(x) ∧ ¬M(x))       [De Morgan]<br>
+          <br>
+          <span style="color:var(--color-text-secondary)">Leitura: "Existe algum humano que não é mortal"</span>
+        </div>
+      </div>
+      <div id="comp-ex2" class="comp-content">
+        <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">Negar: "Existe um estudante que passou" → ∃x (E(x) ∧ P(x))</p>
+        <div class="formula-block">
+          ¬∃x (E(x) ∧ P(x))<br>
+          ≡ ∀x ¬(E(x) ∧ P(x))       [¬∃ vira ∀]<br>
+          ≡ ∀x (¬E(x) ∨ ¬P(x))      [De Morgan]<br>
+          ≡ ∀x (E(x) → ¬P(x))       [eliminação do ∨]<br>
+          <br>
+          <span style="color:var(--color-text-secondary)">Leitura: "Nenhum estudante passou"</span>
+        </div>
+      </div>
+      <div id="comp-ex3" class="comp-content">
+        <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">Negar: "Para todo x existe y maior" → ∀x ∃y Maior(y,x)</p>
+        <div class="formula-block">
+          ¬∀x ∃y Maior(y,x)<br>
+          ≡ ∃x ¬∃y Maior(y,x)       [¬∀ vira ∃]<br>
+          ≡ ∃x ∀y ¬Maior(y,x)       [¬∃ vira ∀]<br>
+          <br>
+          <span style="color:var(--color-text-secondary)">Leitura: "Existe x tal que nenhum y é maior que x"<br>(i.e., existe um máximo no domínio)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Tabela de Equivalências de Quantificadores</h2>
+      <table>
+        <tr><th>Fórmula Original</th><th>Equivalente</th></tr>
+        <tr><td><span class="formula">¬∀x P(x)</span></td><td><span class="formula">∃x ¬P(x)</span></td></tr>
+        <tr><td><span class="formula">¬∃x P(x)</span></td><td><span class="formula">∀x ¬P(x)</span></td></tr>
+        <tr><td><span class="formula">∀x P(x) ∧ ∀x Q(x)</span></td><td><span class="formula">∀x (P(x) ∧ Q(x))</span></td></tr>
+        <tr><td><span class="formula">∃x P(x) ∨ ∃x Q(x)</span></td><td><span class="formula">∃x (P(x) ∨ Q(x))</span></td></tr>
+        <tr><td><span class="formula">∀x ∀y P(x,y)</span></td><td><span class="formula">∀y ∀x P(x,y)</span></td></tr>
+        <tr><td><span class="formula">∃x ∃y P(x,y)</span></td><td><span class="formula">∃y ∃x P(x,y)</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 7. COMPARATIVO LP vs LPO -->
+  <div id="comparativo" class="secao">
+    <div class="card">
+      <h2>Lógica Proposicional vs. Lógica de Predicados</h2>
+      <table>
+        <tr><th>Aspecto</th><th>LP</th><th>LPO</th></tr>
+        <tr><td>Unidade básica</td><td>Proposição atômica (p, q)</td><td>Predicado + termo</td></tr>
+        <tr><td>Variáveis</td><td>Não tem</td><td>Variáveis de objetos (x, y)</td></tr>
+        <tr><td>Quantificadores</td><td>Não tem</td><td>∀ e ∃</td></tr>
+        <tr><td>Expressividade</td><td>Limitada</td><td>Muito maior</td></tr>
+        <tr><td>Decidibilidade</td><td>Decidível (tabela-verdade)</td><td>Semidecidível</td></tr>
+        <tr><td>Tautologia</td><td>Verificável por tabela</td><td>Requer prova formal</td></tr>
+        <tr><td>Domínio</td><td>Não há</td><td>Explícito e necessário</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>A mesma ideia nas duas lógicas</h2>
+      <p>Veja como a mesma informação se expressa nas duas lógicas — e por que a LPO é superior:</p>
+      <table>
+        <tr><th>Afirmação</th><th>LP</th><th>LPO</th></tr>
+        <tr><td>"João é médico"</td><td><span class="formula">p</span></td><td><span class="formula">Médico(joão)</span></td></tr>
+        <tr><td>"Todo médico estuda"</td><td><span class="formula">impossível</span></td><td><span class="formula">∀x(M(x)→E(x))</span></td></tr>
+        <tr><td>"João estuda"</td><td><span class="formula">q</span></td><td><span class="formula">Estuda(joão)</span></td></tr>
+        <tr><td>Prova válida?</td><td class="f center">✗ LP não conecta p e q</td><td class="v center">✓ Por Modus Ponens</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Hierarquia da Lógica</h2>
+      <div class="passo">
+        <div class="num">1</div>
+        <div class="passo-txt"><strong>Lógica Proposicional (LP):</strong> sem variáveis, sem quantificadores. Base.</div>
+      </div>
+      <div class="passo">
+        <div class="num">2</div>
+        <div class="passo-txt"><strong>Lógica de Primeira Ordem (LPO):</strong> variáveis e quantificadores sobre <em>objetos</em>. O que estudamos aqui.</div>
+      </div>
+      <div class="passo">
+        <div class="num">3</div>
+        <div class="passo-txt"><strong>Lógica de Segunda Ordem:</strong> quantificadores também sobre <em>predicados e funções</em>. Mais expressiva, menos tratável.</div>
+      </div>
+      <div class="passo">
+        <div class="num">4</div>
+        <div class="passo-txt"><strong>Lógicas de Ordem Superior:</strong> quantificam sobre tudo. Muito expressivas mas computacionalmente intratáveis.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. APLICAÇÕES -->
+  <div id="aplicacoes" class="secao">
+    <div class="card">
+      <h2>Prolog — Programação em Lógica</h2>
+      <p>Prolog é uma linguagem de programação baseada diretamente em Lógica de Predicados. Fatos e regras são literalmente predicados:</p>
+      <div class="formula-block">
+        humano(socrates).           /* Humano(socrates) */<br>
+        mortal(X) :- humano(X).    /* ∀x Humano(x) → Mortal(x) */<br>
+        ?- mortal(socrates).       /* Consulta: Mortal(socrates)? */<br>
+        true.                      /* Resposta: V */
+      </div>
+    </div>
+    <div class="card">
+      <h2>Banco de Dados Relacionais</h2>
+      <p>A Álgebra Relacional e o SQL têm fundamentos na Lógica de Predicados. Uma tabela é uma extensão de um predicado; uma query é uma fórmula:</p>
+      <div class="formula-block">
+        Tabela Estudante(x) → predicado unário<br>
+        Tabela Nota(x, disciplina, nota) → predicado ternário<br>
+        <br>
+        SELECT * FROM Estudante WHERE aprovado = true<br>
+        ≡ { x | Estudante(x) ∧ Aprovado(x) }<br>
+        ≡ ∃x (Estudante(x) ∧ Aprovado(x))
+      </div>
+    </div>
+    <div class="card">
+      <h2>Inteligência Artificial — Representação do Conhecimento</h2>
+      <p>Sistemas especialistas e ontologias usam Lógica de Predicados para representar conhecimento do mundo:</p>
+      <div class="formula-block">
+        ∀x (Ave(x) ∧ ¬Pinguim(x) → Voa(x))  /* Aves voam, exceto pinguins */<br>
+        ∀x (Pinguim(x) → Ave(x))              /* Pinguins são aves */<br>
+        Ave(tweety) ∧ ¬Pinguim(tweety)<br>
+        ─────────────────────────────────<br>
+        Voa(tweety)  ✓
+      </div>
+    </div>
+    <div class="card">
+      <h2>Verificação Formal de Software</h2>
+      <p>Ferramentas como Coq, Isabelle e Z3 usam LPO para provar matematicamente que programas estão corretos:</p>
+      <div class="formula-block">
+        Pré-condição:  ∀i (0 ≤ i &lt; n → A[i] ≥ 0)<br>
+        Pós-condição:  soma = ∑ᵢ A[i]<br>
+        <br>
+        → Prova formal que o algoritmo é correto para qualquer entrada válida
+      </div>
+      <div class="destaque-info">💻 Na computação moderna: SAT solvers (que verificam satisfatibilidade) e SMT solvers (que estendem SAT com aritmética) são aplicações diretas da LPO usadas em compiladores, segurança e hardware.</div>
+    </div>
+  </div>
+
+  <!-- 9. EXERCÍCIOS -->
+  <div id="exercicios" class="secao">
+    <div class="card">
+      <h2>Quiz — Lógica de Predicados</h2>
+      <p>Teste seu domínio dos conceitos. Selecione a resposta correta em cada questão.</p>
+    </div>
+    <div id="quiz-lpo"></div>
+  </div>
+
+  <!-- 10. GLOSSÁRIO -->
+  <div id="glossario" class="secao">
+    <div class="card">
+      <h2>Glossário — Lógica de Predicados</h2>
+      <div id="glos-lpo"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function mostrar(id, btn) {
+  document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('ativo'));
+  document.getElementById(id).classList.add('ativa');
+  btn.classList.add('ativo');
+}
+
+function detQuant(tipo) {
+  document.querySelectorAll('.det-quant').forEach(d => d.classList.remove('vis'));
+  document.getElementById('det-' + tipo).classList.add('vis');
+}
+
+function showComp(id, btn) {
+  document.querySelectorAll('.comp-content').forEach(c => c.classList.remove('ativa'));
+  document.querySelectorAll('.tab-c').forEach(b => b.classList.remove('ativa'));
+  document.getElementById('comp-' + id).classList.add('ativa');
+  btn.classList.add('ativa');
+}
+
+// AVALIADOR
+const dominio = new Set([1,2,3,4,5,6]);
+let predAtual = 'par';
+let quantAtual = 'univ';
+
+const predicados = {
+  par:      { fn: x => x % 2 === 0, nome: 'Par(x)' },
+  maior3:   { fn: x => x > 3,       nome: 'Maior3(x)' },
+  primo:    { fn: x => { if(x<2)return false; for(let i=2;i<=Math.sqrt(x);i++)if(x%i===0)return false; return true; }, nome: 'Primo(x)' },
+  perfeito: { fn: x => { let s=0; for(let i=1;i<x;i++)if(x%i===0)s+=i; return s===x; }, nome: 'Perf(x)' }
+};
+
+const quantificadores = {
+  univ:     { formula: el => `∀x ${el}`, eval: (D,f) => [...D].every(f) },
+  exist:    { formula: el => `∃x ${el}`, eval: (D,f) => [...D].some(f) },
+  univneg:  { formula: el => `∀x ¬${el}`, eval: (D,f) => [...D].every(x => !f(x)) },
+  existneg: { formula: el => `∃x ¬${el}`, eval: (D,f) => [...D].some(x => !f(x)) },
+};
+
+function toggleElem(el, val) {
+  const n = parseInt(val);
+  el.classList.toggle('sel');
+  if (el.classList.contains('sel')) dominio.add(n);
+  else dominio.delete(n);
+  avaliar();
+}
+
+function setPred(btn, id) {
+  document.querySelectorAll('.pred-btn').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  predAtual = id;
+  avaliar();
+}
+
+function setQuant(btn, id) {
+  document.querySelectorAll('.qbtn').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  quantAtual = id;
+  avaliar();
+}
+
+function avaliar() {
+  if (dominio.size === 0) {
+    document.getElementById('av-formula').textContent = '—';
+    document.getElementById('av-valor').textContent = '⚠ Domínio vazio';
+    document.getElementById('av-valor').className = 'res-valor-g';
+    document.getElementById('av-detalhe').textContent = 'Selecione pelo menos um elemento.';
+    return;
+  }
+  const pred = predicados[predAtual];
+  const quant = quantificadores[quantAtual];
+  const formula = quant.formula(pred.nome);
+  const resultado = quant.eval(dominio, pred.fn);
+  const D = [...dominio].sort((a,b)=>a-b);
+  const satisfazem = D.filter(pred.fn);
+  const naoSatisfazem = D.filter(x => !pred.fn(x));
+
+  document.getElementById('av-formula').textContent = formula;
+  document.getElementById('av-valor').textContent = resultado ? 'VERDADEIRO ✓' : 'FALSO ✗';
+  document.getElementById('av-valor').className = 'res-valor-g ' + (resultado ? 'v' : 'f');
+  let det = `D = {${D.join(', ')}}\n`;
+  det += `Satisfazem ${pred.nome}: {${satisfazem.join(', ') || '∅'}}\n`;
+  det += `Não satisfazem: {${naoSatisfazem.join(', ') || '∅'}}`;
+  if (!resultado && quantAtual === 'univ' && naoSatisfazem.length > 0)
+    det += `\nContraexemplo: x = ${naoSatisfazem[0]}`;
+  if (resultado && quantAtual === 'exist' && satisfazem.length > 0)
+    det += `\nTestemunha: x = ${satisfazem[0]}`;
+  document.getElementById('av-detalhe').textContent = det;
+}
+
+// QUIZ
+const quizzes = [
+  {
+    q: 'Qual fórmula representa corretamente "Todo estudante é inteligente"? (E=Estudante, I=Inteligente)',
+    opts: ['∃x (E(x) ∧ I(x))', '∀x (E(x) ∧ I(x))', '∀x (E(x) → I(x))', '∃x (E(x) → I(x))'],
+    c: 2,
+    fb: '∀x (E(x) → I(x)) — o quantificador universal sobre propriedades se combina com →. A opção ∀x (E(x)∧I(x)) diria que TODOS os objetos do domínio são estudantes e inteligentes — muito mais forte!'
+  },
+  {
+    q: 'Se o domínio é D = {2, 4, 6} e Par(x) significa "x é par", qual é o valor de ∃x ¬Par(x)?',
+    opts: ['Verdadeiro — existe um não-par', 'Falso — não existe nenhum não-par', 'Indeterminado', 'Depende da interpretação'],
+    c: 1,
+    fb: '∃x ¬Par(x) seria V somente se houvesse algum elemento ímpar no domínio. Como D={2,4,6} e todos são pares, ¬Par(x) é F para todo x. Portanto a disjunção ∃ é F.'
+  },
+  {
+    q: 'Qual é a negação correta de ∀x ∃y Amigo(x,y)?',
+    opts: ['∀x ∀y ¬Amigo(x,y)', '∃x ∀y ¬Amigo(x,y)', '∃x ∃y ¬Amigo(x,y)', '∀x ∃y ¬Amigo(x,y)'],
+    c: 1,
+    fb: '¬∀x ∃y Amigo(x,y) ≡ ∃x ¬∃y Amigo(x,y) ≡ ∃x ∀y ¬Amigo(x,y). Cada ¬ empurrado para dentro inverte o quantificador: ∀ vira ∃ e ∃ vira ∀.'
+  },
+  {
+    q: 'Em ∀x (P(x) → ∃y Q(x,y)), quais variáveis são ligadas?',
+    opts: ['Apenas x', 'Apenas y', 'x e y — ambas ligadas', 'Nenhuma — são todas livres'],
+    c: 2,
+    fb: 'x é ligada pelo ∀x externo; y é ligada pelo ∃y interno. Uma variável é ligada quando está no escopo de um quantificador que a declara. Não há variáveis livres nesta sentença.'
+  },
+  {
+    q: '"Nenhum cão é gato" — qual a fórmula correta? (C=Cão, G=Gato)',
+    opts: ['∀x (C(x) → ¬G(x))', '∃x ¬(C(x) ∧ G(x))', '¬∀x (C(x) ∧ G(x))', '∀x ¬C(x)'],
+    c: 0,
+    fb: '"Nenhum cão é gato" = "Para todo x, se x é cão então x não é gato" = ∀x (C(x) → ¬G(x)). Esta é equivalente a ¬∃x (C(x) ∧ G(x)), mas a opção A está diretamente correta.'
+  },
+  {
+    q: 'Qual a diferença entre ∀x ∃y Maior(y,x) e ∃y ∀x Maior(y,x) no domínio dos números naturais?',
+    opts: ['São equivalentes — a ordem de quantificadores não importa', 'A primeira é V e a segunda é F', 'A primeira é F e a segunda é V', 'Ambas são V nos naturais'],
+    c: 1,
+    fb: '∀x ∃y Maior(y,x): "para cada x, existe um y maior" — V nos naturais (sempre há x+1). ∃y ∀x Maior(y,x): "existe um y maior que TODOS" — F nos naturais (não há máximo). A ordem de quantificadores IMPORTA muitíssimo!'
+  }
+];
+
+function renderQuiz() {
+  const c = document.getElementById('quiz-lpo');
+  c.innerHTML = quizzes.map((quiz, i) => `
+    <div class="quiz-area" id="q-${i}">
+      <div class="quiz-q">Q${i+1}: ${quiz.q}</div>
+      <div class="quiz-opts">${quiz.opts.map((o,oi)=>`
+        <div class="quiz-opt" id="qo-${i}-${oi}" onclick="responder(${i},${oi})">${o}</div>
+      `).join('')}</div>
+      <div class="quiz-feedback" id="qf-${i}"></div>
+    </div>
+  `).join('');
+}
+
+function responder(qi, oi) {
+  const quiz = quizzes[qi];
+  document.querySelectorAll(`#q-${qi} .quiz-opt`).forEach(o => o.onclick = null);
+  if (oi === quiz.c) {
+    document.getElementById(`qo-${qi}-${oi}`).classList.add('correta');
+    const fb = document.getElementById(`qf-${qi}`);
+    fb.className = 'quiz-feedback ok';
+    fb.textContent = '✓ Correto! ' + quiz.fb;
+  } else {
+    document.getElementById(`qo-${qi}-${oi}`).classList.add('errada');
+    document.getElementById(`qo-${qi}-${quiz.c}`).classList.add('correta');
+    const fb = document.getElementById(`qf-${qi}`);
+    fb.className = 'quiz-feedback err';
+    fb.textContent = '✗ Incorreto. ' + quiz.fb;
+  }
+}
+
+const glossario = [
+  { t: 'Predicado', d: 'Função que recebe termos e retorna V ou F. Representa propriedades (unário) ou relações (n-ário) entre objetos.' },
+  { t: 'Termo', d: 'Constante, variável ou função aplicada a termos. Denota objetos do domínio (não retorna V/F).' },
+  { t: 'Constante', d: 'Símbolo que nomeia um objeto específico do domínio: socrates, 0, brasil.' },
+  { t: 'Variável', d: 'Símbolo que representa um objeto arbitrário do domínio, cujo valor é determinado por quantificadores ou substituição.' },
+  { t: 'Quantificador Universal (∀)', d: '"Para todo". ∀x P(x) é V quando P(x) é V para todo elemento x do domínio.' },
+  { t: 'Quantificador Existencial (∃)', d: '"Existe pelo menos um". ∃x P(x) é V quando há pelo menos um x no domínio que satisfaz P(x).' },
+  { t: 'Domínio de interpretação', d: 'Conjunto não vazio de objetos sobre os quais as variáveis variam e os predicados são interpretados.' },
+  { t: 'Variável ligada', d: 'Variável que ocorre no escopo de um quantificador que a declara.' },
+  { t: 'Variável livre', d: 'Variável que ocorre fora do escopo de qualquer quantificador que a declare. Torna a fórmula aberta.' },
+  { t: 'Sentença', d: 'Fórmula sem variáveis livres. Tem valor-verdade definido em uma dada interpretação.' },
+  { t: 'Contraexemplo', d: 'Elemento do domínio que falsifica uma fórmula universal ∀x P(x). Um único basta para falsificar.' },
+  { t: 'Testemunha', d: 'Elemento do domínio que verifica uma fórmula existencial ∃x P(x). Um único basta para verificar.' },
+  { t: 'Interpretação / Estrutura', d: 'Especificação de um domínio + atribuição de significados às constantes, funções e predicados.' },
+  { t: 'Fórmula válida', d: 'Fórmula verdadeira em toda interpretação possível. Equivalente à tautologia da LP.' },
+  { t: 'Satisfatível', d: 'Fórmula verdadeira em pelo menos uma interpretação.' },
+  { t: 'Aridade', d: 'Número de argumentos que um predicado ou função recebe. Par(x) tem aridade 1; Maior(x,y) tem aridade 2.' },
+];
+
+function renderGlossario() {
+  document.getElementById('glos-lpo').innerHTML = glossario.map(g =>
+    `<div class="glos-item"><div class="glos-termo">${g.t}</div><div class="glos-def">${g.d}</div></div>`
+  ).join('');
+}
+
+avaliar();
+renderQuiz();
+renderGlossario();
+</script>

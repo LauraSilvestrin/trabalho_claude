@@ -1,0 +1,737 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .aula { max-width: 680px; padding: 0 0 2rem; }
+  .header { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; border: 0.5px solid var(--color-border-tertiary); }
+  .badge { display: inline-block; background: var(--color-background-info); color: var(--color-text-info); font-size: 11px; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; }
+  .titulo { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+  .subtitulo { font-size: 14px; color: var(--color-text-secondary); }
+  .nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .nav button { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all .15s; }
+  .nav button:hover { background: var(--color-background-secondary); }
+  .nav button.ativo { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; }
+  .secao { display: none; }
+  .secao.ativa { display: block; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+  .card h2 { font-size: 16px; font-weight: 500; margin-bottom: 0.75rem; color: var(--color-text-primary); }
+  .card p { font-size: 14px; line-height: 1.7; color: var(--color-text-secondary); margin-bottom: 0.75rem; }
+  .card p:last-child { margin-bottom: 0; }
+  .destaque { background: var(--color-background-info); border-left: 3px solid var(--color-text-info); border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 14px; color: var(--color-text-primary); }
+  .formula { font-family: var(--font-mono); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.5rem 1rem; font-size: 14px; display: inline-block; margin: 4px 2px; color: var(--color-text-primary); }
+  .grid-conn { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 0.75rem; }
+  .conn-card { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.75rem; text-align: center; cursor: pointer; transition: border-color .15s; }
+  .conn-card:hover { border-color: var(--color-border-info); }
+  .conn-card .simb { font-family: var(--font-mono); font-size: 22px; font-weight: 500; color: var(--color-text-info); }
+  .conn-card .nome { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .conn-card .exemplo { font-size: 11px; color: var(--color-text-tertiary); margin-top: 4px; font-family: var(--font-mono); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 0.75rem; }
+  th { background: var(--color-background-secondary); color: var(--color-text-secondary); font-weight: 500; padding: 8px 10px; border: 0.5px solid var(--color-border-tertiary); text-align: center; }
+  td { padding: 7px 10px; border: 0.5px solid var(--color-border-tertiary); text-align: center; color: var(--color-text-primary); font-family: var(--font-mono); font-size: 13px; }
+  .v { color: #1d9e75; font-weight: 500; }
+  .f { color: #d85a30; font-weight: 500; }
+  .tabs-tv { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .tab-tv { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all .15s; font-family: var(--font-mono); }
+  .tab-tv.ativa { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; }
+  .tv-content { display: none; }
+  .tv-content.ativa { display: block; }
+  .ex-interativo { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+  .ex-interativo h3 { font-size: 14px; font-weight: 500; margin-bottom: 0.75rem; color: var(--color-text-primary); }
+  .vars { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .var-toggle { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; color: var(--color-text-primary); }
+  .toggle-btn { width: 36px; height: 20px; border-radius: 10px; background: var(--color-border-secondary); position: relative; transition: background .2s; cursor: pointer; border: none; }
+  .toggle-btn.on { background: #1d9e75; }
+  .toggle-btn::after { content:''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform .2s; }
+  .toggle-btn.on::after { transform: translateX(16px); }
+  .resultado-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; }
+  .res-formula { font-family: var(--font-mono); font-size: 14px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .res-valor { font-size: 18px; font-weight: 500; }
+  .res-valor.v { color: #1d9e75; }
+  .res-valor.f { color: #d85a30; }
+  .passo { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 0.75rem; }
+  .num { background: var(--color-background-info); color: var(--color-text-info); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 2px; }
+  .passo-txt { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; }
+  .quiz-area { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+  .quiz-q { font-size: 15px; font-weight: 500; margin-bottom: 1rem; color: var(--color-text-primary); }
+  .quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; font-size: 14px; color: var(--color-text-primary); transition: border-color .15s; }
+  .quiz-opt:hover { border-color: var(--color-border-info); }
+  .quiz-opt.correta { border-color: #1d9e75; background: #E1F5EE; color: #085041; }
+  .quiz-opt.errada { border-color: #d85a30; background: #FAECE7; color: #4A1B0C; }
+  .quiz-feedback { font-size: 13px; margin-top: 0.75rem; padding: 0.5rem 0.75rem; border-radius: var(--border-radius-md); display: none; }
+  .quiz-feedback.ok { background: #E1F5EE; color: #085041; display: block; }
+  .quiz-feedback.err { background: #FAECE7; color: #4A1B0C; display: block; }
+  .prox-btn { margin-top: 0.75rem; padding: 6px 18px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-size: 13px; display: none; }
+  .prox-btn.vis { display: inline-block; }
+  .glossario-item { border-bottom: 0.5px solid var(--color-border-tertiary); padding: 0.75rem 0; }
+  .glossario-item:last-child { border-bottom: none; }
+  .glos-termo { font-weight: 500; font-size: 14px; color: var(--color-text-primary); font-family: var(--font-mono); }
+  .glos-def { font-size: 13px; color: var(--color-text-secondary); margin-top: 3px; line-height: 1.6; }
+  
+  /* Interface Visual: Lógica Proposicional (Prof. Cavejon)
+   Tema: Modern Academic Blue
+*/
+
+:root {
+    --primary: #0ea5e9; /* Azul Info para diferenciar da Lógica de Predicados */
+    --primary-hover: #0284c7;
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #334155;
+    --text-bold: #0f172a;
+    --border-color: #e2e8f0;
+    --accent-success: #10b981;
+    --accent-error: #ef4444;
+    --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+body {
+    background-color: var(--bg-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+.aula {
+    max-width: 850px !important;
+    margin: 2rem auto;
+    padding: 0 20px;
+}
+
+/* Header com Gradiente Profissional */
+.header {
+    background: linear-gradient(135deg, #0c4a6e 0%, #0ea5e9 100%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem !important;
+    text-align: center;
+}
+
+.header .titulo {
+    color: white !important;
+    font-size: 28px !important;
+    font-weight: 700 !important;
+}
+
+.header .subtitulo {
+    color: #e0f2fe !important;
+    opacity: 0.9;
+}
+
+.badge {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-weight: 600 !important;
+    text-transform: uppercase;
+}
+
+/* Navegação */
+.nav {
+    justify-content: center;
+    background: white;
+    padding: 10px;
+    border-radius: 50px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.nav button {
+    border: none !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+
+.nav button.ativo {
+    background: var(--primary) !important;
+    color: white !important;
+}
+
+/* Cards e Destaques */
+.card {
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: white !important;
+}
+
+.card h2 {
+    color: var(--text-bold) !important;
+    border-left: 4px solid var(--primary);
+    padding-left: 12px;
+    margin-bottom: 1.25rem !important;
+}
+
+.destaque {
+    background: #f0f9ff !important;
+    border-left: 4px solid var(--primary) !important;
+    color: #0369a1 !important;
+    font-weight: 500;
+}
+
+/* Fórmulas e Tabelas-Verdade */
+.formula {
+    background: #f1f5f9 !important;
+    color: #0284c7 !important;
+    font-weight: 600;
+    border: 1px solid #cbd5e1 !important;
+}
+
+table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    border: none !important;
+}
+
+th {
+    background: #334155 !important;
+    color: white !important;
+    text-transform: uppercase;
+    font-size: 12px !important;
+    letter-spacing: 0.05em;
+}
+
+td {
+    background: white;
+    border: 0.5px solid #f1f5f9 !important;
+}
+
+/* Conectivos (Grid) */
+.conn-card {
+    border: 2px solid var(--border-color) !important;
+    transition: all 0.2s ease !important;
+}
+
+.conn-card:hover {
+    border-color: var(--primary) !important;
+    background: #f0f9ff !important;
+    transform: translateY(-3px);
+}
+
+.conn-card .simb {
+    color: var(--primary) !important;
+    font-size: 26px !important;
+}
+
+/* Avaliador Interativo */
+.ex-interativo {
+    border: 2px solid var(--primary) !important;
+    background: #f8fafc !important;
+}
+
+.toggle-btn {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.resultado-box {
+    border: 1px solid #cbd5e1 !important;
+    transition: all 0.2s;
+}
+
+.resultado-box:hover {
+    border-color: var(--primary) !important;
+    background: white !important;
+}
+
+/* Quiz */
+.quiz-opt {
+    border: 2px solid var(--border-color) !important;
+    font-weight: 500;
+}
+
+.quiz-opt:hover {
+    border-color: var(--primary) !important;
+    background: #f0f9ff !important;
+}
+
+.quiz-opt.correta {
+    background: #dcfce7 !important;
+    border-color: #22c55e !important;
+}
+
+.quiz-opt.errada {
+    background: #fee2e2 !important;
+    border-color: #ef4444 !important;
+}
+
+/* Animação */
+.secao.ativa {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="aula">
+  <div class="header">
+    <div class="badge">Lógica em Computação — Aula 1</div>
+    <div class="titulo">Lógica Proposicional</div>
+    <div class="subtitulo">Prof. Cavejon · Fundamentos da Computação · Nível: Introdutório–Intermediário</div>
+  </div>
+
+  <div class="nav">
+    <button class="ativo" onclick="mostrar('intro',this)">1. Introdução</button>
+    <button onclick="mostrar('proposicoes',this)">2. Proposições</button>
+    <button onclick="mostrar('conectivos',this)">3. Conectivos</button>
+    <button onclick="mostrar('tabela',this)">4. Tabelas-verdade</button>
+    <button onclick="mostrar('interativo',this)">5. Avaliador</button>
+    <button onclick="mostrar('leis',this)">6. Leis Lógicas</button>
+    <button onclick="mostrar('aplicacoes',this)">7. Aplicações</button>
+    <button onclick="mostrar('exercicios',this)">8. Exercícios</button>
+    <button onclick="mostrar('glossario',this)">9. Glossário</button>
+  </div>
+
+  <!-- 1. INTRODUÇÃO -->
+  <div id="intro" class="secao ativa">
+    <div class="card">
+      <h2>O que é Lógica Proposicional?</h2>
+      <p>A Lógica Proposicional — também chamada de Lógica Sentencial ou Cálculo Proposicional — é o ramo mais fundamental da lógica matemática. Ela estuda como combinar afirmações simples (chamadas de <strong>proposições</strong>) em afirmações mais complexas, e como determinar se essas afirmações são verdadeiras ou falsas.</p>
+      <div class="destaque">💡 Pense assim: a lógica proposicional é a gramática do raciocínio matemático e computacional. Quem domina isso, domina a base do pensamento formal.</div>
+      <p>Foi formalizada pelo matemático George Boole no século XIX e é hoje a base de tudo na computação: circuitos digitais, linguagens de programação, banco de dados, inteligência artificial e muito mais.</p>
+    </div>
+    <div class="card">
+      <h2>Por que estudar?</h2>
+      <div class="passo">
+        <div class="num">1</div>
+        <div class="passo-txt"><strong>Fundamento de circuitos:</strong> Portas lógicas AND, OR, NOT implementam exatamente os conectivos lógicos em hardware.</div>
+      </div>
+      <div class="passo">
+        <div class="num">2</div>
+        <div class="passo-txt"><strong>Programação:</strong> Toda estrutura <code>if/else</code>, <code>while</code> e filtro em banco de dados usa lógica proposicional.</div>
+      </div>
+      <div class="passo">
+        <div class="num">3</div>
+        <div class="passo-txt"><strong>IA e verificação formal:</strong> Provadores de teoremas, satisfatibilidade (SAT) e raciocínio automatizado partem daqui.</div>
+      </div>
+      <div class="passo">
+        <div class="num">4</div>
+        <div class="passo-txt"><strong>Raciocínio cotidiano:</strong> Ajuda a identificar falácias, validar argumentos e estruturar provas matemáticas.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. PROPOSIÇÕES -->
+  <div id="proposicoes" class="secao">
+    <div class="card">
+      <h2>O que é uma Proposição?</h2>
+      <p>Uma <strong>proposição</strong> é qualquer sentença declarativa que pode ser classificada como <span class="v">Verdadeira (V)</span> ou <span class="f">Falsa (F)</span> — nunca os dois ao mesmo tempo, nunca nenhum dos dois.</p>
+      <div class="destaque">📌 Princípios fundamentais:<br>• <strong>Bivalência:</strong> toda proposição é V ou F.<br>• <strong>Não contradição:</strong> não pode ser V e F simultaneamente.<br>• <strong>Terceiro excluído:</strong> não existe meio-termo entre V e F.</div>
+    </div>
+    <div class="card">
+      <h2>Exemplos — o que É proposição</h2>
+      <p><span class="formula">p</span> "O Sol é uma estrela." → <span class="v">Verdadeiro</span></p>
+      <p><span class="formula">q</span> "2 + 2 = 5" → <span class="f">Falso</span></p>
+      <p><span class="formula">r</span> "A água ferve a 100°C ao nível do mar." → <span class="v">Verdadeiro</span></p>
+      <p><span class="formula">s</span> "Todo número par é divisível por 2." → <span class="v">Verdadeiro</span></p>
+    </div>
+    <div class="card">
+      <h2>O que NÃO é proposição</h2>
+      <p>❌ "Que horas são?" — pergunta, não tem valor-verdade.</p>
+      <p>❌ "Feche a porta!" — comando, não é declaração.</p>
+      <p>❌ "Que belo dia!" — exclamação subjetiva.</p>
+      <p>❌ "Esta frase é falsa." — paradoxo, viola bivalência.</p>
+      <p>❌ "x + 1 = 5" — aberta, valor depende de x (isso é da lógica de predicados).</p>
+    </div>
+    <div class="card">
+      <h2>Proposições Simples vs. Compostas</h2>
+      <p>Uma <strong>proposição simples (atômica)</strong> não pode ser decomposta em proposições menores: <span class="formula">p = "Chove"</span></p>
+      <p>Uma <strong>proposição composta (molecular)</strong> é formada por proposições simples ligadas por conectivos lógicos: <span class="formula">p ∧ q = "Chove e faz frio"</span></p>
+    </div>
+  </div>
+
+  <!-- 3. CONECTIVOS -->
+  <div id="conectivos" class="secao">
+    <div class="card">
+      <h2>Os Cinco Conectivos Lógicos</h2>
+      <p>Os conectivos são os operadores que combinam proposições para formar novas proposições compostas. Clique em cada um para mais detalhes.</p>
+      <div class="grid-conn">
+        <div class="conn-card" onclick="detConn('neg')">
+          <div class="simb">¬</div><div class="nome">Negação</div><div class="exemplo">¬p</div>
+        </div>
+        <div class="conn-card" onclick="detConn('conj')">
+          <div class="simb">∧</div><div class="nome">Conjunção</div><div class="exemplo">p ∧ q</div>
+        </div>
+        <div class="conn-card" onclick="detConn('disj')">
+          <div class="simb">∨</div><div class="nome">Disjunção</div><div class="exemplo">p ∨ q</div>
+        </div>
+        <div class="conn-card" onclick="detConn('cond')">
+          <div class="simb">→</div><div class="nome">Condicional</div><div class="exemplo">p → q</div>
+        </div>
+        <div class="conn-card" onclick="detConn('bicond')">
+          <div class="simb">↔</div><div class="nome">Bicondicional</div><div class="exemplo">p ↔ q</div>
+        </div>
+      </div>
+    </div>
+    <div id="det-conn" class="card" style="display:none">
+      <h2 id="dc-titulo"></h2>
+      <p id="dc-desc"></p>
+      <div class="destaque" id="dc-regra"></div>
+      <p id="dc-ex"></p>
+      <p id="dc-prog"></p>
+    </div>
+    <div class="card">
+      <h2>Precedência dos Conectivos</h2>
+      <p>Assim como na matemática (× antes de +), os conectivos têm ordem de precedência. Da maior para a menor:</p>
+      <p style="text-align:center;margin:0.75rem 0">
+        <span class="formula">¬</span> → <span class="formula">∧</span> → <span class="formula">∨</span> → <span class="formula">→</span> → <span class="formula">↔</span>
+      </p>
+      <p>Parênteses sempre têm prioridade máxima. Exemplo: <span class="formula">¬p ∧ q → r</span> é lido como <span class="formula">((¬p) ∧ q) → r</span></p>
+    </div>
+  </div>
+
+  <!-- 4. TABELAS-VERDADE -->
+  <div id="tabela" class="secao">
+    <div class="card">
+      <h2>O que é uma Tabela-Verdade?</h2>
+      <p>Uma tabela-verdade lista sistematicamente todos os valores possíveis de V/F para uma fórmula proposicional. Com <em>n</em> variáveis, há <strong>2ⁿ</strong> combinações possíveis.</p>
+      <div class="destaque">Com 1 variável: 2¹ = 2 linhas · Com 2 variáveis: 2² = 4 linhas · Com 3 variáveis: 2³ = 8 linhas</div>
+    </div>
+    <div class="card">
+      <h2>Selecione o conectivo</h2>
+      <div class="tabs-tv">
+        <button class="tab-tv ativa" onclick="showTV('neg',this)">¬p</button>
+        <button class="tab-tv" onclick="showTV('conj',this)">p ∧ q</button>
+        <button class="tab-tv" onclick="showTV('disj',this)">p ∨ q</button>
+        <button class="tab-tv" onclick="showTV('cond',this)">p → q</button>
+        <button class="tab-tv" onclick="showTV('bicond',this)">p ↔ q</button>
+        <button class="tab-tv" onclick="showTV('comp',this)">(p∧q)→r</button>
+      </div>
+      <div id="tv-neg" class="tv-content ativa">
+        <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">A negação inverte o valor-verdade da proposição.</p>
+        <table><tr><th>p</th><th>¬p</th></tr>
+          <tr><td class="v">V</td><td class="f">F</td></tr>
+          <tr><td class="f">F</td><td class="v">V</td></tr>
+        </table>
+      </div>
+      <div id="tv-conj" class="tv-content">
+        <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">A conjunção é V somente quando ambas as proposições são V.</p>
+        <table><tr><th>p</th><th>q</th><th>p ∧ q</th></tr>
+          <tr><td class="v">V</td><td class="v">V</td><td class="v">V</td></tr>
+          <tr><td class="v">V</td><td class="f">F</td><td class="f">F</td></tr>
+          <tr><td class="f">F</td><td class="v">V</td><td class="f">F</td></tr>
+          <tr><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr>
+        </table>
+      </div>
+      <div id="tv-disj" class="tv-content">
+        <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">A disjunção é F somente quando ambas são F.</p>
+        <table><tr><th>p</th><th>q</th><th>p ∨ q</th></tr>
+          <tr><td class="v">V</td><td class="v">V</td><td class="v">V</td></tr>
+          <tr><td class="v">V</td><td class="f">F</td><td class="v">V</td></tr>
+          <tr><td class="f">F</td><td class="v">V</td><td class="v">V</td></tr>
+          <tr><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr>
+        </table>
+      </div>
+      <div id="tv-cond" class="tv-content">
+        <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">O condicional só é F quando a premissa é V e a conclusão é F. Lembre: "hipótese falsa não gera contradição".</p>
+        <table><tr><th>p</th><th>q</th><th>p → q</th></tr>
+          <tr><td class="v">V</td><td class="v">V</td><td class="v">V</td></tr>
+          <tr><td class="v">V</td><td class="f">F</td><td class="f">F</td></tr>
+          <tr><td class="f">F</td><td class="v">V</td><td class="v">V</td></tr>
+          <tr><td class="f">F</td><td class="f">F</td><td class="v">V</td></tr>
+        </table>
+      </div>
+      <div id="tv-bicond" class="tv-content">
+        <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">O bicondicional é V quando as duas proposições têm o mesmo valor-verdade.</p>
+        <table><tr><th>p</th><th>q</th><th>p ↔ q</th></tr>
+          <tr><td class="v">V</td><td class="v">V</td><td class="v">V</td></tr>
+          <tr><td class="v">V</td><td class="f">F</td><td class="f">F</td></tr>
+          <tr><td class="f">F</td><td class="v">V</td><td class="f">F</td></tr>
+          <tr><td class="f">F</td><td class="f">F</td><td class="v">V</td></tr>
+        </table>
+      </div>
+      <div id="tv-comp" class="tv-content">
+        <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px">Fórmula com 3 variáveis: (p ∧ q) → r — note que é F somente quando (p∧q)=V e r=F.</p>
+        <table><tr><th>p</th><th>q</th><th>r</th><th>p∧q</th><th>(p∧q)→r</th></tr>
+          <tr><td class="v">V</td><td class="v">V</td><td class="v">V</td><td class="v">V</td><td class="v">V</td></tr>
+          <tr><td class="v">V</td><td class="v">V</td><td class="f">F</td><td class="v">V</td><td class="f">F</td></tr>
+          <tr><td class="v">V</td><td class="f">F</td><td class="v">V</td><td class="f">F</td><td class="v">V</td></tr>
+          <tr><td class="v">V</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="v">V</td></tr>
+          <tr><td class="f">F</td><td class="v">V</td><td class="v">V</td><td class="f">F</td><td class="v">V</td></tr>
+          <tr><td class="f">F</td><td class="v">V</td><td class="f">F</td><td class="f">F</td><td class="v">V</td></tr>
+          <tr><td class="f">F</td><td class="f">F</td><td class="v">V</td><td class="f">F</td><td class="v">V</td></tr>
+          <tr><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="v">V</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Tautologia, Contradição e Contingência</h2>
+      <p><strong>Tautologia:</strong> fórmula sempre V para qualquer combinação. Ex: <span class="formula">p ∨ ¬p</span> <span class="v">✓ sempre V</span></p>
+      <p><strong>Contradição:</strong> fórmula sempre F. Ex: <span class="formula">p ∧ ¬p</span> <span class="f">✗ sempre F</span></p>
+      <p><strong>Contingência:</strong> pode ser V ou F dependendo dos valores. Ex: <span class="formula">p ∧ q</span></p>
+    </div>
+  </div>
+
+  <!-- 5. AVALIADOR INTERATIVO -->
+  <div id="interativo" class="secao">
+    <div class="card">
+      <h2>Avaliador de Fórmulas</h2>
+      <p>Defina os valores de p e q e veja o resultado de diferentes fórmulas em tempo real.</p>
+    </div>
+    <div class="ex-interativo">
+      <h3>Defina os valores das variáveis</h3>
+      <div class="vars">
+        <div class="var-toggle">
+          <button class="toggle-btn on" id="btn-p" onclick="toggleVar('p')"></button>
+          <span>p = <span id="val-p" class="v">V</span></span>
+        </div>
+        <div class="var-toggle">
+          <button class="toggle-btn on" id="btn-q" onclick="toggleVar('q')"></button>
+          <span>q = <span id="val-q" class="v">V</span></span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="resultados-grid">
+        <div class="resultado-box"><div class="res-formula">¬p</div><div class="res-valor" id="r-neg-p"></div></div>
+        <div class="resultado-box"><div class="res-formula">¬q</div><div class="res-valor" id="r-neg-q"></div></div>
+        <div class="resultado-box"><div class="res-formula">p ∧ q</div><div class="res-valor" id="r-conj"></div></div>
+        <div class="resultado-box"><div class="res-formula">p ∨ q</div><div class="res-valor" id="r-disj"></div></div>
+        <div class="resultado-box"><div class="res-formula">p → q</div><div class="res-valor" id="r-cond"></div></div>
+        <div class="resultado-box"><div class="res-formula">p ↔ q</div><div class="res-valor" id="r-bicond"></div></div>
+        <div class="resultado-box"><div class="res-formula">¬p ∨ q</div><div class="res-valor" id="r-negp-disj-q"></div></div>
+        <div class="resultado-box"><div class="res-formula">(p∧q)→(p∨q)</div><div class="res-valor" id="r-taut"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. LEIS LÓGICAS -->
+  <div id="leis" class="secao">
+    <div class="card">
+      <h2>Equivalências e Leis Lógicas</h2>
+      <p>Duas fórmulas são <strong>logicamente equivalentes</strong> (A ≡ B) quando têm exatamente os mesmos valores em toda tabela-verdade. As equivalências abaixo são as mais importantes e amplamente usadas.</p>
+    </div>
+    <div class="card">
+      <h2>Leis de De Morgan</h2>
+      <div class="destaque">As mais importantes da computação — base para simplificação de circuitos.</div>
+      <p><span class="formula">¬(p ∧ q) ≡ ¬p ∨ ¬q</span></p>
+      <p><span class="formula">¬(p ∨ q) ≡ ¬p ∧ ¬q</span></p>
+      <p style="margin-top:0.5rem;font-size:13px;color:var(--color-text-secondary)">Exemplo prático: "Não (chove E faz frio)" ≡ "Não chove OU não faz frio"</p>
+    </div>
+    <div class="card">
+      <h2>Leis Fundamentais</h2>
+      <p><strong>Dupla negação:</strong> <span class="formula">¬¬p ≡ p</span></p>
+      <p><strong>Identidade:</strong> <span class="formula">p ∧ V ≡ p</span> &nbsp; <span class="formula">p ∨ F ≡ p</span></p>
+      <p><strong>Dominância:</strong> <span class="formula">p ∧ F ≡ F</span> &nbsp; <span class="formula">p ∨ V ≡ V</span></p>
+      <p><strong>Complemento:</strong> <span class="formula">p ∧ ¬p ≡ F</span> &nbsp; <span class="formula">p ∨ ¬p ≡ V</span></p>
+      <p><strong>Comutatividade:</strong> <span class="formula">p ∧ q ≡ q ∧ p</span></p>
+      <p><strong>Associatividade:</strong> <span class="formula">(p ∧ q) ∧ r ≡ p ∧ (q ∧ r)</span></p>
+      <p><strong>Distributividade:</strong> <span class="formula">p ∧ (q ∨ r) ≡ (p∧q) ∨ (p∧r)</span></p>
+    </div>
+    <div class="card">
+      <h2>Equivalências do Condicional</h2>
+      <p><strong>Contrapositiva:</strong> <span class="formula">p → q ≡ ¬q → ¬p</span></p>
+      <p><strong>Eliminação:</strong> <span class="formula">p → q ≡ ¬p ∨ q</span></p>
+      <p><strong>Bicondicional:</strong> <span class="formula">p ↔ q ≡ (p→q) ∧ (q→p)</span></p>
+      <div class="destaque">⚠️ Atenção: p→q NÃO é equivalente a q→p (converse). Confundir isso é uma das falácias mais comuns!</div>
+    </div>
+  </div>
+
+  <!-- 7. APLICAÇÕES -->
+  <div id="aplicacoes" class="secao">
+    <div class="card">
+      <h2>Lógica em Circuitos Digitais</h2>
+      <p>Cada porta lógica de um processador implementa um conectivo proposicional em hardware com transistores.</p>
+      <p><span class="formula">AND</span> = conjunção (∧) &nbsp; <span class="formula">OR</span> = disjunção (∨) &nbsp; <span class="formula">NOT</span> = negação (¬)</p>
+      <p><span class="formula">NAND</span> = ¬(p∧q) &nbsp; <span class="formula">NOR</span> = ¬(p∨q) &nbsp; <span class="formula">XOR</span> = disjunção exclusiva</p>
+      <div class="destaque">💡 Toda a computação moderna — bilhões de transistores — é apenas lógica proposicional executada em escala nanométrica.</div>
+    </div>
+    <div class="card">
+      <h2>Lógica em Programação</h2>
+      <p>Cada condição de controle de fluxo em código é uma proposição:</p>
+      <p><span class="formula">if (x > 0 && y > 0)</span> → <span class="formula">p ∧ q</span></p>
+      <p><span class="formula">if (logged_in || is_admin)</span> → <span class="formula">p ∨ q</span></p>
+      <p><span class="formula">if (!is_error)</span> → <span class="formula">¬p</span></p>
+      <p>Lei de De Morgan é usada para simplificar condições: <br><span class="formula">!(a && b)</span> é equivalente a <span class="formula">!a || !b</span></p>
+    </div>
+    <div class="card">
+      <h2>Lógica em Banco de Dados (SQL)</h2>
+      <p>Cláusulas WHERE em SQL são fórmulas proposicionais:</p>
+      <p><span class="formula">WHERE idade > 18 AND cidade = 'SP'</span></p>
+      <p>equivale a <span class="formula">p ∧ q</span>, onde p = "idade > 18" e q = "cidade = 'SP'"</p>
+    </div>
+    <div class="card">
+      <h2>Lógica em Argumentos</h2>
+      <p>Um argumento é <strong>válido</strong> se a conjunção das premissas implica logicamente a conclusão — ou seja, é uma tautologia da forma <span class="formula">(P1 ∧ P2 ∧ ... ∧ Pn) → C</span>.</p>
+      <p><strong>Modus Ponens:</strong> <span class="formula">((p → q) ∧ p) → q</span> — sempre tautologia!</p>
+      <p><strong>Modus Tollens:</strong> <span class="formula">((p → q) ∧ ¬q) → ¬p</span> — sempre tautologia!</p>
+    </div>
+  </div>
+
+  <!-- 8. EXERCÍCIOS -->
+  <div id="exercicios" class="secao">
+    <div class="card">
+      <h2>Quiz — Teste seus conhecimentos</h2>
+      <p>Responda os exercícios abaixo. Clique em uma opção para ver o resultado.</p>
+    </div>
+    <div id="quiz-container"></div>
+  </div>
+
+  <!-- 9. GLOSSÁRIO -->
+  <div id="glossario" class="secao">
+    <div class="card">
+      <h2>Glossário de Termos</h2>
+      <div id="glos-lista"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const vars = { p: true, q: true };
+
+function mostrar(id, btn) {
+  document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('ativo'));
+  document.getElementById(id).classList.add('ativa');
+  btn.classList.add('ativo');
+}
+
+function showTV(id, btn) {
+  document.querySelectorAll('.tv-content').forEach(t => t.classList.remove('ativa'));
+  document.querySelectorAll('.tab-tv').forEach(b => b.classList.remove('ativa'));
+  document.getElementById('tv-'+id).classList.add('ativa');
+  btn.classList.add('ativa');
+}
+
+const connDetails = {
+  neg: {
+    titulo: '¬ Negação (NOT)',
+    desc: 'O operador unário que inverte o valor-verdade de uma proposição. É o único conectivo que opera sobre uma única proposição.',
+    regra: '¬V = F   ·   ¬F = V',
+    ex: 'Se p = "Está chovendo" (V), então ¬p = "Não está chovendo" (F)',
+    prog: 'Em código: !condicao — inverte booleanos'
+  },
+  conj: {
+    titulo: '∧ Conjunção (AND)',
+    desc: 'Representa o "E" lógico. A fórmula p ∧ q é verdadeira somente quando AMBAS p e q são verdadeiras. Qualquer proposição falsa "contamina" o resultado.',
+    regra: 'V ∧ V = V   ·   V ∧ F = F   ·   F ∧ V = F   ·   F ∧ F = F',
+    ex: '"Chove E faz frio" só é verdade se as duas partes forem verdade simultaneamente.',
+    prog: 'Em código: condicao1 && condicao2'
+  },
+  disj: {
+    titulo: '∨ Disjunção (OR)',
+    desc: 'Representa o "OU" lógico (inclusivo). A fórmula p ∨ q é falsa somente quando AMBAS p e q são falsas. Basta uma ser verdadeira.',
+    regra: 'V ∨ V = V   ·   V ∨ F = V   ·   F ∨ V = V   ·   F ∨ F = F',
+    ex: '"Chove OU faz frio" — basta uma das condições ser verdadeira.',
+    prog: 'Em código: condicao1 || condicao2'
+  },
+  cond: {
+    titulo: '→ Condicional (IMPLICA)',
+    desc: 'O "se... então...". É o conectivo mais sutil: só é FALSO quando a premissa é verdadeira mas a conclusão é falsa. Quando a premissa é falsa, o condicional é considerado verdadeiro (premissa falsa não gera contradição).',
+    regra: 'V→V=V   ·   V→F=F   ·   F→V=V   ·   F→F=V',
+    ex: '"Se chove, então uso guarda-chuva" — só falha se chove E não uso guarda-chuva.',
+    prog: 'Equivalente a: !p || q em código'
+  },
+  bicond: {
+    titulo: '↔ Bicondicional (SE E SOMENTE SE)',
+    desc: 'O "se e somente se". É verdadeiro quando as duas proposições têm o MESMO valor-verdade (ambas V ou ambas F). Representa equivalência lógica.',
+    regra: 'V↔V=V   ·   V↔F=F   ·   F↔V=F   ·   F↔F=V',
+    ex: '"Você passa se e somente se tirar ≥ 5" — ambas as direções devem valer.',
+    prog: 'Equivalente a: (p&&q)||(!p&&!q)'
+  }
+};
+
+function detConn(id) {
+  const d = connDetails[id];
+  document.getElementById('dc-titulo').textContent = d.titulo;
+  document.getElementById('dc-desc').textContent = d.desc;
+  document.getElementById('dc-regra').textContent = d.regra;
+  document.getElementById('dc-ex').textContent = '📝 Exemplo: ' + d.ex;
+  document.getElementById('dc-prog').textContent = '💻 Programação: ' + d.prog;
+  document.getElementById('det-conn').style.display = 'block';
+}
+
+function toggleVar(v) {
+  vars[v] = !vars[v];
+  const btn = document.getElementById('btn-'+v);
+  const lbl = document.getElementById('val-'+v);
+  btn.classList.toggle('on', vars[v]);
+  lbl.textContent = vars[v] ? 'V' : 'F';
+  lbl.className = vars[v] ? 'v' : 'f';
+  atualizarResultados();
+}
+
+function vf(b) { return b ? 'V' : 'F'; }
+function setR(id, val) {
+  const el = document.getElementById(id);
+  el.textContent = vf(val);
+  el.className = 'res-valor ' + (val ? 'v' : 'f');
+}
+
+function atualizarResultados() {
+  const p = vars.p, q = vars.q;
+  setR('r-neg-p', !p);
+  setR('r-neg-q', !q);
+  setR('r-conj', p && q);
+  setR('r-disj', p || q);
+  setR('r-cond', !p || q);
+  setR('r-bicond', p === q);
+  setR('r-negp-disj-q', !p || q);
+  setR('r-taut', !(p && q) || (p || q));
+}
+
+const quizzes = [
+  { q: 'Qual das seguintes é uma proposição válida?', opts: ['"Que horas são?"', '"x + 2 = 5"', '"Brasília é a capital do Brasil."', '"Feche a janela!"'], c: 2, fb: 'Brasília é a capital do Brasil é uma sentença declarativa com valor-verdade definido (V). As demais são pergunta, sentença aberta e comando.' },
+  { q: 'Se p = F e q = V, qual é o valor de p → q?', opts: ['Falso', 'Verdadeiro', 'Indeterminado', 'Depende do contexto'], c: 1, fb: 'Quando a premissa p é F, o condicional p→q é sempre V, independente de q. F→V = V.' },
+  { q: 'Qual equivalência representa a Lei de De Morgan?', opts: ['¬(p∧q) ≡ ¬p∧¬q', '¬(p∧q) ≡ ¬p∨¬q', '¬(p∧q) ≡ p∨q', '¬(p∧q) ≡ p∧q'], c: 1, fb: 'Lei de De Morgan: a negação de uma conjunção é a disjunção das negações. ¬(p∧q) ≡ ¬p∨¬q.' },
+  { q: 'A fórmula p ∨ ¬p é classificada como:', opts: ['Contradição', 'Contingência', 'Tautologia', 'Proposição simples'], c: 2, fb: 'p∨¬p é sempre verdadeira (V∨F=V e F∨V=V). Isso a torna uma tautologia — o Princípio do Terceiro Excluído.' },
+  { q: 'Qual é o resultado de ¬p ∧ q quando p=V e q=V?', opts: ['V', 'F', 'V e F', 'Indefinido'], c: 1, fb: '¬p = ¬V = F. Então F ∧ V = F. A conjunção requer ambas V para ser V.' },
+];
+
+let qAtual = 0;
+function renderQuiz() {
+  const c = document.getElementById('quiz-container');
+  c.innerHTML = '';
+  quizzes.forEach((quiz, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-area';
+    div.id = 'quiz-'+i;
+    div.innerHTML = `<div class="quiz-q">Q${i+1}: ${quiz.q}</div>
+      <div class="quiz-opts">${quiz.opts.map((o,oi)=>`<div class="quiz-opt" id="qo-${i}-${oi}" onclick="responder(${i},${oi})">${o}</div>`).join('')}</div>
+      <div class="quiz-feedback" id="qf-${i}"></div>`;
+    c.appendChild(div);
+  });
+}
+
+function responder(qi, oi) {
+  const quiz = quizzes[qi];
+  const fb = document.getElementById('qf-'+qi);
+  document.querySelectorAll(`#quiz-${qi} .quiz-opt`).forEach(o => o.onclick = null);
+  if (oi === quiz.c) {
+    document.getElementById(`qo-${qi}-${oi}`).classList.add('correta');
+    fb.className = 'quiz-feedback ok';
+    fb.textContent = '✓ Correto! ' + quiz.fb;
+  } else {
+    document.getElementById(`qo-${qi}-${oi}`).classList.add('errada');
+    document.getElementById(`qo-${qi}-${quiz.c}`).classList.add('correta');
+    fb.className = 'quiz-feedback err';
+    fb.textContent = '✗ Incorreto. ' + quiz.fb;
+  }
+}
+
+const glossario = [
+  { t: 'Proposição', d: 'Sentença declarativa com valor-verdade definido (V ou F), mas nunca ambos.' },
+  { t: 'Valor-verdade', d: 'O status lógico de uma proposição: Verdadeiro (V) ou Falso (F).' },
+  { t: 'Conectivo lógico', d: 'Operador que combina proposições: ¬, ∧, ∨, →, ↔.' },
+  { t: 'Fórmula bem formada (FBF)', d: 'Expressão corretamente construída segundo as regras da lógica proposicional.' },
+  { t: 'Tautologia', d: 'Fórmula verdadeira para todas as combinações possíveis de valores.' },
+  { t: 'Contradição', d: 'Fórmula falsa para todas as combinações possíveis de valores.' },
+  { t: 'Contingência', d: 'Fórmula que pode ser V ou F dependendo dos valores das variáveis.' },
+  { t: 'Equivalência lógica (≡)', d: 'Duas fórmulas são equivalentes se têm a mesma tabela-verdade em todas as linhas.' },
+  { t: 'Tabela-verdade', d: 'Tabela que lista todos os valores possíveis de uma fórmula para cada combinação de V/F das variáveis.' },
+  { t: 'Contrapositiva', d: 'p→q ≡ ¬q→¬p. Equivalente lógico do condicional, com premissa e conclusão invertidas e negadas.' },
+  { t: 'Modus Ponens', d: 'Regra de inferência: se p→q e p são V, então q é V.' },
+  { t: 'Satisfatibilidade (SAT)', d: 'Problema de verificar se existe alguma atribuição de valores que torna uma fórmula V. Problema NP-completo.' },
+];
+
+function renderGlossario() {
+  const lista = document.getElementById('glos-lista');
+  lista.innerHTML = glossario.map(g => `<div class="glossario-item"><div class="glos-termo">${g.t}</div><div class="glos-def">${g.d}</div></div>`).join('');
+}
+
+atualizarResultados();
+renderQuiz();
+renderGlossario();
+</script>
